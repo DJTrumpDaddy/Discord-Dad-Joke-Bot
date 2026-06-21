@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # wizard.sh — Interactive TUI installer for Discord Dad Joke Bot
-# Usage: sudo bash <(curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh)
+# Usage: curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh \
+#          -o /tmp/dadjoke-wizard.sh && sudo bash /tmp/dadjoke-wizard.sh
 set -euo pipefail
 
 # ── Constants ──────────────────────────────────────────────────────────────────────
@@ -34,7 +35,9 @@ wt() { whiptail --title "$TT" "$@" 3>&1 1>&2 2>&3; }
 # ── Preflight ───────────────────────────────────────────────────────────────────
 if [[ $EUID -ne 0 ]]; then
   echo "This installer must be run as root."
-  echo "Try: sudo bash <(curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh)"
+  echo "Try:"
+  echo "  curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh \\"
+  echo "    -o /tmp/dadjoke-wizard.sh && sudo bash /tmp/dadjoke-wizard.sh"
   exit 1
 fi
 
