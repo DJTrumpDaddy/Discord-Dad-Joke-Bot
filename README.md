@@ -2,6 +2,18 @@
 
 A C# Discord bot that delivers dad jokes via slash commands. Works as both a server bot and a [user-installed app](https://discord.com/developers/docs/change-log#userinstallable-apps).
 
+## Quick Install (Debian / Ubuntu)
+
+```bash
+sudo bash <(curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh)
+```
+
+An interactive TUI wizard will walk you through setup, install .NET 8 and other dependencies via `apt`, build the bot from source, and register two systemd services — one to run the bot and one to auto-update it from `main` every 30 seconds.
+
+> **Need a bot token first?** Go to [discord.com/developers/applications](https://discord.com/developers/applications), create an application, open the **Bot** tab, and click **Reset Token**.
+
+---
+
 ## Features
 
 - `/dadjoke` — random joke from the built-in library of 282 jokes
@@ -10,10 +22,7 @@ A C# Discord bot that delivers dad jokes via slash commands. Works as both a ser
 - **User-installable** — users can add the bot to their own account and use it in any server or DM
 - Punchlines are hidden behind Discord spoiler tags (`||...||`) so the setup lands first
 
-## Prerequisites
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8)
-- A Discord application with a bot token ([Developer Portal](https://discord.com/developers/applications))
+---
 
 ## Discord Application Setup
 
@@ -23,9 +32,11 @@ A C# Discord bot that delivers dad jokes via slash commands. Works as both a ser
 4. Under **Installation → Install Link**, set **Install Link** to `Discord Provided Link` and enable both **Guild Install** and **User Install** scopes so users can add it to their accounts.
 5. Add the `applications.commands` and `bot` scopes when generating an invite link.
 
+---
+
 ## Configuration
 
-Edit `appsettings.json` or set environment variables (prefix: `DADJOKE__`).
+After running the wizard, settings live in `/etc/dadjoke-bot/env`. You can also edit `appsettings.json` for manual / development runs.
 
 ```json
 {
@@ -45,30 +56,55 @@ Edit `appsettings.json` or set environment variables (prefix: `DADJOKE__`).
 | `RespondToHiDad` | `false` | Auto-reply to `Hi @BotName`. Requires **Message Content** privileged intent enabled in the Developer Portal. |
 | `TestGuildId` | `null` | Guild ID for instant command registration during development. Leave `null` for global registration in production. |
 
-### Environment variable override
-
-Any setting can be overridden via environment variable using double-underscore separators:
+Any setting can be overridden with an environment variable using double-underscore separators:
 
 ```sh
 export DADJOKE__BOT__TOKEN=your_token_here
 export DADJOKE__BOT__RESPONDTOHIDAD=true
 ```
 
-## Running
+---
+
+## Manual Setup (without the wizard)
 
 ```sh
+# Initial install (prompts for token)
+sudo bash scripts/install.sh
+
+# Or run from source during development
 cd src/DadJokeBot
 dotnet run
 ```
 
-Or build a self-contained release:
+Build a self-contained release:
 
 ```sh
 dotnet publish src/DadJokeBot -c Release -o ./publish
 ./publish/DadJokeBot
 ```
 
-> **Development tip:** Set `TestGuildId` to your test server's ID. Guild-scoped commands register instantly. Global commands (production) propagate within ~1 hour.
+> **Development tip:** Set `TestGuildId` to your test server’s ID. Guild-scoped commands register instantly. Global commands (production) propagate within ~1 hour.
+
+---
+
+## Useful Server Commands
+
+```bash
+# Stream live bot output
+journalctl -u dadjoke-bot -f
+
+# Stream auto-updater output
+journalctl -u dadjoke-updater -f
+
+# Restart the bot manually
+systemctl restart dadjoke-bot
+
+# Edit token or other settings
+nano /etc/dadjoke-bot/env
+systemctl restart dadjoke-bot
+```
+
+---
 
 ## Adding More Jokes
 
@@ -79,6 +115,8 @@ Setup,Punchline,Credit,Source Link
 ```
 
 Fields containing commas must be wrapped in double quotes.
+
+---
 
 ## Project Structure
 
@@ -93,9 +131,13 @@ discord-dad-joke-bot/
 │       ├── Commands/
 │       │   └── JokeModule.cs   # /dadjoke slash command
 │       └── Services/
-│           └── JokeService.cs  # CSV loading, random + keyword search
+│           └── JokeService.cs  # CSV loading, random pick + keyword search
 ├── data/
 │   └── dad_jokes.csv
+├── scripts/
+│   ├── wizard.sh           # Interactive TUI installer (recommended)
+│   ├── install.sh          # Non-interactive installer
+│   └── dadjoke-updater.sh  # Auto-update loop (managed by systemd)
 ├── appsettings.json
 └── .gitignore
 ```
