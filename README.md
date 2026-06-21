@@ -5,7 +5,8 @@ A C# Discord bot that delivers dad jokes via slash commands. Works as both a ser
 ## Quick Install (Debian / Ubuntu)
 
 ```bash
-sudo bash <(curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh)
+curl -fsSL https://raw.githubusercontent.com/DJTrumpDaddy/Discord-Dad-Joke-Bot/main/scripts/wizard.sh \
+  -o /tmp/dadjoke-wizard.sh && sudo bash /tmp/dadjoke-wizard.sh
 ```
 
 An interactive TUI wizard will walk you through setup, install .NET 8 and other dependencies via `apt`, build the bot from source, and register two systemd services — one to run the bot and one to auto-update it from `main` every 30 seconds.
@@ -83,7 +84,7 @@ dotnet publish src/DadJokeBot -c Release -o ./publish
 ./publish/DadJokeBot
 ```
 
-> **Development tip:** Set `TestGuildId` to your test server’s ID. Guild-scoped commands register instantly. Global commands (production) propagate within ~1 hour.
+> **Development tip:** Set `TestGuildId` to your test server's ID. Guild-scoped commands register instantly. Global commands (production) propagate within ~1 hour.
 
 ---
 
